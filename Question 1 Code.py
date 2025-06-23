@@ -112,7 +112,6 @@ def main():
         table1, table2 = gen_random_ic(table1, table2)
         collisions_table1.append(table1.collisions)
         collisions_table2.append(table2.collisions)
-        # (Optionally print collisions in each round here)
 
     # After 10 rounds, calculate total and average collisions
     total_coll1 = sum(collisions_table1)
@@ -127,11 +126,11 @@ def main():
 
     """ Print For Every Round's Collisions Summary """
     for round_num in range(TEST_ROUNDS):
-        # Get collision counts for this round
+        # Get collision counts for every round
         coll1 = collisions_table1[round_num]
         coll2 = collisions_table2[round_num]
 
-        # Print row with proper alignment
+        # Print row with neat alignment
         print(f"Round {round_num + 1:<14} | {coll1:>7} | {coll2:>7}")
 
     """ Print For Total Collisions & Average """
