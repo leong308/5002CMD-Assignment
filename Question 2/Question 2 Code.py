@@ -9,14 +9,17 @@ def main():
     person2 = Person('Pey Hui Yi', 'Female', '', False)
     person3 = Person('Tan Zhi Qi', 'Female', '', False)
 
-    socialMedia.addVertex(person1)
-    socialMedia.addVertex(person2)
-    socialMedia.addVertex(person3)
+    socialMedia.add_vertex(person1)
+    socialMedia.add_vertex(person2)
+    socialMedia.add_vertex(person3)
 
     socialMedia.add_edge(person1, person2)
     socialMedia.add_edge(person1, person3)
     socialMedia.add_edge(person2, person1)
+    socialMedia.add_edge(person3, person1)
     # socialMedia.remove_edge(person1, person2)
+
+    person1.update_biography("this is banananananananananana")
 
     print("Has Edge? ",socialMedia.has_edge(person1, person2))
 

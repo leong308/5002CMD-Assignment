@@ -18,12 +18,27 @@ class SocialMedia:
                 return True
         return False
 
+    def get_user_from_id(self, id):
+        users = list(self.adj_list.keys())  # Convert to list to allow indexing
+        try:
+            person = users[id - 1]
+            return person
+        except Exception as e:
+            print(f"❗ An error occurred while fetching this user: {e}")
+            return None
+
+    def get_user_from_name(self, name):
+        for person in self.adj_list:
+            if person.name == name:
+                return person
+        return None  # If not found
+
     def get_total_vertices(self):
         return len(self.adj_list)
 
     """ Add a new vertex (person) """
     """ Parameter 1: vertex (person) class object """
-    def addVertex(self, vertex):
+    def add_vertex(self, vertex):
         # Check if vertex already exists
         # Check if already have 10 vertices
         if vertex not in self.adj_list and self.get_total_vertices() < 10:
@@ -56,6 +71,23 @@ class SocialMedia:
         if from_vertex in self.adj_list:
             return to_vertex in self.adj_list[from_vertex]
         return False
+    
+    def get_incoming_edges(self, vertex):
+        """Return a list of names of people who follow the given person name."""
+        incoming = []
+        for from_person, neighbors in self.adj_list.items():
+            for to_person in neighbors:
+                if to_person == vertex:
+                    incoming.append(from_person.name)
+        return incoming
+
+    def get_outgoing_edges(self, vertex):
+        """Return a list of names of people the given person name is following."""
+        outgoing = []
+        if vertex in self.adj_list:
+            for to_person in self.adj_list[vertex]:
+                outgoing.append(to_person.name)
+        return outgoing
 
     """ Add an edge to connect between 2 vertices in a direction (Eg. following a person) """
     """ Parameter 1: first vertex (person who follows) class object """
@@ -93,11 +125,5 @@ class SocialMedia:
             # Print the person's name and their connections
             print(vertex.name, "->", names_list)
 
-    """ Print out the list of users """
-    def print_all_users(self):
-        count = 1
-        # Loop through each person
-        for vertex in self.adj_list:
-            # Print the person's name 
-            print(f"{count}. {vertex.name}")
-            count += 1
+    
+    
