@@ -1,4 +1,4 @@
-from person import Person
+# from person import Person
 
 # =============================================================================
 #                             SOCIAL MEDIA CLASS
@@ -13,24 +13,24 @@ class SocialMedia:
     """ Return: True if has vertex, False if no vertex """
     def has_vertex(self, name):
         # Loop through each person object in the graph
-        for person in self.adj_list:
-            if person.name == name:
+        for vertex in self.adj_list:
+            if vertex.get_name() == name:
                 return True
         return False
 
-    def get_user_from_id(self, id):
-        users = list(self.adj_list.keys())  # Convert to list to allow indexing
+    def get_vertex_from_id(self, id):
+        vertices = list(self.adj_list.keys())  # Convert to list to allow indexing
         try:
-            person = users[id - 1]
-            return person
+            vertex = vertices[id - 1]
+            return vertex
         except Exception as e:
-            print(f"❗ An error occurred while fetching this user: {e}")
+            print(f"❗ An error occurred while fetching this vertex: {e}")
             return None
 
-    def get_user_from_name(self, name):
-        for person in self.adj_list:
-            if person.name == name:
-                return person
+    def get_vertex_from_name(self, name):
+        for vertex in self.adj_list:
+            if vertex.get_name() == name:
+                return vertex
         return None  # If not found
 
     def get_total_vertices(self):
@@ -53,11 +53,11 @@ class SocialMedia:
             raise ValueError(f"Target does not exists")     # Reusable message
 
         # Iterate through all the neighbors for every vertex
-        for neighbors in self.adj_list.values():
+        for linkings in self.adj_list.values():
             # Check if the target vertex exists
-            if vertex in neighbors:
+            if vertex in linkings:
                 # Remove the vertex from adjacency list
-                neighbors.remove(vertex)
+                linkings.remove(vertex)
 
         # Remove the vertex from the graph
         del self.adj_list[vertex]
@@ -75,18 +75,18 @@ class SocialMedia:
     def get_incoming_edges(self, vertex):
         """Return a list of names of people who follow the given person name."""
         incoming = []
-        for from_person, neighbors in self.adj_list.items():
-            for to_person in neighbors:
-                if to_person == vertex:
-                    incoming.append(from_person.name)
+        for from_vertex, linkings in self.adj_list.items():
+            for to_vertex in linkings:
+                if to_vertex == vertex:
+                    incoming.append(from_vertex.get_name())
         return incoming
 
     def get_outgoing_edges(self, vertex):
         """Return a list of names of people the given person name is following."""
         outgoing = []
         if vertex in self.adj_list:
-            for to_person in self.adj_list[vertex]:
-                outgoing.append(to_person.name)
+            for to_vertex in self.adj_list[vertex]:
+                outgoing.append(to_vertex.get_name())
         return outgoing
 
     """ Add an edge to connect between 2 vertices in a direction (Eg. following a person) """
@@ -112,18 +112,16 @@ class SocialMedia:
             else:
                 raise ValueError("Edge does not exists")
 
-    """ Print out the graph in list format """
-    def print_adj_list(self):
-        # Loop through each person
-        for vertex in self.adj_list:
-            names_list = []  # to store names of related people
-
-            # Loop through and write the related person names into names_list
-            for related in self.adj_list[vertex]:
-                names_list.append(related.name)
-
-            # Print the person's name and their connections
-            print(vertex.name, "->", names_list)
-
-    
-    
+    def get_bidirectional_edges(self):
+        bidirectional_edges = []
+        for vertex1 in self.adj_list:
+            for vertex2 in self.adj_list:
+                # Avoid checking with own vertex
+                if vertex1 != vertex2:
+                    # Check whether there are edges in both incoming and outgoing
+                    if (self.has_edge(vertex1, vertex2) and self.has_edge(vertex2, vertex1)):
+                        # Make sure the vertices pair is not being recorded before in flipped side
+                        if (vertex2, vertex1) not in bidirectional_edges:
+                            # Record the vertices pair into the list
+                            bidirectional_edges.append((vertex1, vertex2))
+        return bidirectional_edges

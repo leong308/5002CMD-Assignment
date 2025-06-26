@@ -1,3 +1,4 @@
+import random
 from person import Person
 from social_media import SocialMedia
 import user_interface
@@ -5,31 +6,40 @@ import user_interface
 def main():
 
     socialMedia = SocialMedia()
-    person1 = Person('Leong Zi Qi', 'Male', '', False)
-    person2 = Person('Pey Hui Yi', 'Female', '', False)
-    person3 = Person('Tan Zhi Qi', 'Female', '', False)
+    users = [
+        Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌'),
+        Person('Pey Hui Yi', 'F', 'Bookworm and nature lover 📚🌿'),
+        Person('Tan Zhi Qi', 'F', 'Runner, coder, dreamer 🏃‍♀️💻'),
+        Person('Jason Wong', 'M', 'Coffee is life ☕'),
+        Person('Amira Afiqah', 'F', 'Graphic designer & cat person 🐱🎨'),
+        Person('Aaron Lim', 'M', 'Love solving puzzles and writing code 🧩👨‍💻'),
+        Person('Nur Sarah', 'F', 'Baking & K-drama bingeing 🍰📺'),
+        Person('Marcus Tan', 'M', 'Climbing mountains one app at a time ⛰️📱'),
+    ]
 
-    socialMedia.add_vertex(person1)
-    socialMedia.add_vertex(person2)
-    socialMedia.add_vertex(person3)
+    # Add all users to the graph
+    for user in users:
+        socialMedia.add_vertex(user)
 
-    socialMedia.add_edge(person1, person2)
-    socialMedia.add_edge(person1, person3)
-    socialMedia.add_edge(person2, person1)
-    socialMedia.add_edge(person3, person1)
-    # socialMedia.remove_edge(person1, person2)
+    # Randomly assign followings (edges)
+    for user in users:
+        # Choose a random number of people to follow (1 to 3 others)
+        num_to_follow = random.randint(1, 3)
+        # Choose targets excluding self
+        possible_targets = [u for u in users if u != user]
+        to_follow = random.sample(possible_targets, k=num_to_follow)
+        
+        for target in to_follow:
+            socialMedia.add_edge(user, target)
 
-    person1.update_biography("this is banananananananananana")
+    print("\n=== Summary ===")
+    for person in users:
+        followers = socialMedia.get_incoming_edges(person)
+        followings = socialMedia.get_outgoing_edges(person)
+        print(f"\n{person.name}")
+        print(f"  Followers  ({len(followers)}): {followers}")
+        print(f"  Following  ({len(followings)}): {followings}")
 
-    print("Has Edge? ",socialMedia.has_edge(person1, person2))
-
-    socialMedia.print_adj_list()
-    print(socialMedia.has_vertex('Pey Hui Yi'))
-    socialMedia.remove_vertex(person2)
-    print(socialMedia.has_vertex('Pey Hui Yi'))
-    print("Has Edge? ",socialMedia.has_edge(person1, person2))
-
-    socialMedia.print_adj_list()
     user_interface.launch_interface()
 
     user_interface.main_dahsboard(socialMedia)
