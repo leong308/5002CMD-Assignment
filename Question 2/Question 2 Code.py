@@ -3,6 +3,10 @@ from person import Person
 from social_media import SocialMedia
 import user_interface
 
+# =============================================================================
+#                        MAIN PROGRAM EXECUTION FLOW
+# =============================================================================
+
 def main():
     # Create social media instance
     socialMedia = SocialMedia()
