@@ -4,8 +4,9 @@ from social_media import SocialMedia
 import user_interface
 
 def main():
-
+    # Create social media instance
     socialMedia = SocialMedia()
+    # Add dummy users into social media app
     users = [
         Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌'),
         Person('Pey Hui Yi', 'F', 'Bookworm and nature lover 📚🌿'),
@@ -17,32 +18,22 @@ def main():
         Person('Marcus Tan', 'M', 'Climbing mountains one app at a time ⛰️📱'),
     ]
 
-    # Add all users to the graph
+    # Add all users into social media
     for user in users:
         socialMedia.add_vertex(user)
 
-    # Randomly assign followings (edges)
+    # Randomly assign followings
     for user in users:
-        # Choose a random number of people to follow (1 to 3 others)
-        num_to_follow = random.randint(1, 3)
+        # Choose a random number of people to follow
+        num_to_follow = random.randint(1, 4)
         # Choose targets excluding self
         possible_targets = [u for u in users if u != user]
-        to_follow = random.sample(possible_targets, k=num_to_follow)
-        
+        to_follow = random.sample(possible_targets, k = num_to_follow)
         for target in to_follow:
             socialMedia.add_edge(user, target)
 
-    print("\n=== Summary ===")
-    for person in users:
-        followers = socialMedia.get_incoming_edges(person)
-        followings = socialMedia.get_outgoing_edges(person)
-        print(f"\n{person.name}")
-        print(f"  Followers  ({len(followers)}): {followers}")
-        print(f"  Following  ({len(followings)}): {followings}")
-
-    user_interface.launch_interface()
-
-    user_interface.main_dahsboard(socialMedia)
+    # Main program execution
+    user_interface.launch_interface(socialMedia)
 
 # =============================================================================
 #                           PROGRAM LAUNCHES HERE

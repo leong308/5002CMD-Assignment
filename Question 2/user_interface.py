@@ -1,22 +1,45 @@
-import os
-from person import Person
-from social_media import SocialMedia
+import os                   # Import this for clear screen purpose
+from person import Person   # Import this for add user purpose
 
+##################################################################################################################################
+""" Cleanup the current terminal's display """
+##################################################################################################################################
 def clear_screen():
+    # cls is for Windows (nt)
+    # clear is for macOS/Linux
     os.system('cls' if os.name == 'nt' else 'clear')
 
+##################################################################################################################################
+""" Render the header with predefined UI design """
+##################################################################################################################################
 def render_header(text):
     print()
     print("=" * 55)
-    print(text.center(55))
+    print(text.center(55))      # Center the header title
     print("=" * 55)
     print()
 
-def launch_interface():
+##################################################################################################################################
+""" Main interface of the program (one-time) """
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
+def launch_interface(socialMedia):
     clear_screen()
     render_header("Welcome to Leong's social media application")
-    input("Press 'Enter' key to proceed ...")  # waits for any key (Enter)
+    input("Press 'Enter' key to proceed ...")       # Waits for enter key to proceed
+    main_dahsboard(socialMedia)
 
+##################################################################################################################################
+""" Main loop (dashboard) of the program """
+"""
+    This dashboard alllows users to:
+    - select to view all users within the system
+    - select to view all connections between every users
+    - select to view comprehensive statistics of the system
+    - select to exit the program
+"""
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
 def main_dahsboard(socialMedia):
     clear_screen()
     # Use this as the main loop
@@ -27,52 +50,73 @@ def main_dahsboard(socialMedia):
         print("3. View system statistics")
         print("0. Exit")
         choice = int(input("\n👆 Navigate to? : "))
-
+        
+        # When user selected to view all users
         if choice == 1:
             clear_screen()
             print("Proceed to view all users ...")
             all_users_interface(socialMedia)
+        # When user selected to view all connections
         elif choice == 2:
             clear_screen()
             print("Proceed to view all connections ...")
             render_header("All Connections")
             print_connections(socialMedia)
-            input("Press 'Enter' key to back to main dashboard ...")
-            # all_users_interface(socialMedia)
+            input("Press 'Enter' key to back to main dashboard ...")    # Waits for enter key to proceed
+        # When user selected to view system statistics
         elif choice == 3:
             clear_screen()
             print("Proceed to view system statistics ...")
             render_header("System Statistics")
             print_system_stat(socialMedia)
-            input("Press 'Enter' key to back to main dashboard ...")
+            input("Press 'Enter' key to back to main dashboard ...")    # Waits for enter key to proceed
+        # When user selected to exit the program
         elif choice == 0:
             clear_screen()
             print("\n👋 Exiting the app ...")
             break
+        # When entered choices are invalid
         else:
             print("❗ Invalid choice. Please try again.")
 
+##################################################################################################################################
+""" To display all users at a glance """
+"""
+    This interface alllows users to:
+    - view a list of all users within the system
+    - view total users count and vacancies left
+    - select to view a specific user in the system
+    - select to add a new user into the system
+    - select to back to main dashboard
+"""
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
 def all_users_interface(socialMedia):
+    # Loop until user wish to back to main dashboard
     while True:
         render_header("All Users")
-        print_all_users(socialMedia)
-        total_users = socialMedia.get_total_vertices()
-        print("\nTotal users: ", total_users)
-        print(f"Vacancies left: {10 - total_users}\n")
-        if total_users is 0:
+        total_users = socialMedia.get_total_vertices()  # Fetch total users
+        # Only prints if there are users exists
+        if total_users > 0:
+            print_all_users(socialMedia)
+        else:
             print("There is no user in this system ...\n")
-        elif total_users is 10:
+        print("\nTotal users: ", total_users)           # Print total existing users
+        print(f"Vacancies left: {10 - total_users}\n")  # Print vacancies left for adding users
+
+        if total_users == 10:
             print("The number of users reached the maximum capacity of this system ...\n")
         print("=" * 55)
         print()
-        if total_users is 0 or total_users is 1:
-            if total_users is 1:
+
+        # Logics to beautify UI
+        if total_users == 0 or total_users == 1:
+            if total_users == 1:
                 print(" 1.", "View specific user")
             print("11. Add new user")
             print(" 0. Back <-")
-        elif total_users is 10:
+        elif total_users == 10:
             print(f"1-{total_users}.", "View specific user")
-            print("  11. Add new user")
             print("   0. Back <-")
         else:
             print(f"1-{total_users}.", "View specific user")
@@ -80,42 +124,85 @@ def all_users_interface(socialMedia):
             print("  0. Back <-")
         choice = int(input("\n👆 Enter your choice: "))
 
-        if choice in range (1, socialMedia.get_total_vertices() + 1):
+        # When user selected to view a specific user
+        # Check if the choice is in range of the total users
+        # Check whether there is at least 1 user in the system
+        if choice in range (1, socialMedia.get_total_vertices() + 1) and total_users > 0:
             clear_screen()
             print_specific_user(socialMedia, choice)
             print("Navigating to all users interface ...")
-        elif choice == 11:
+        # When user selected to add new user
+        # Check whether the total users is less than 10 now
+        elif choice == 11 and total_users < 10:
             clear_screen()
             new_user = add_new_user()
+            # If user is successfully created
             if new_user is not None:
+                # Add person into socialMedia
                 socialMedia.add_vertex(new_user)
                 print(f"✅ User '{new_user.name}' is registered into the system.")
+        # When user selected to back to main dashboard
         elif choice == 0:
+            # Navigate back to main dashboard
             clear_screen()
             print("\nBack to main dashboard ...")
             break
         else:
             print("❗ Invalid choice. Please try again.")
 
+##################################################################################################################################
+""" To add a new person """
+"""
+    This interface alllows users to:
+    - enters new person's name
+    - enters new person's gender in M or F
+    - enters new person's biography (optional)
+"""
+""" Return: New person's object (class) """
+##################################################################################################################################
 def add_new_user():
     render_header("Adding New User")
     try:
-        name = input("Enter name: ")
+        # Loop until user enters a valid name
+        while True:
+            name = input("Enter name: ").strip()
+            # Ends the loop if name is not empty
+            if len(name) > 0:
+                break
+            else:
+                print("❗ Invalid input. Please enter a valid profile name.\n")
+        # Loop until user enters a valid gender
         while True:
             gender = input("Enter gender (M/F): ").strip().upper()
             if gender in ("M", "F"):
                 break
-            print("❗ Invalid input. Please enter 'M' - Male or 'F' - Female.")
-        bio = input("Enter biography: ")
+            print("❗ Invalid input. Please enter 'M' - Male or 'F' - Female.\n")
+        # Biography is optional, accepts any form of input
+        bio = input("Enter biography: ").strip()
 
+        # Create and return new person's object
         return Person(name, gender, bio)
     
     except Exception as e:
         print(f"❗ An error occurred while adding a new user: {e}")
         return None
     
+##################################################################################################################################
+""" To edit the person """
+"""
+    This interface alllows users to:
+    - select to edit person's name
+    - select to edit person's biography
+    - select to remove the person's follower
+    - select to remove the person's following
+    - select to back to specific user page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+##################################################################################################################################
 def edit_user(socialMedia, person):
     clear_screen()
+    # Loop until user wish to back to specific user interface
     while True:
         render_header(f"Edit User [{person.get_name()}]")
         print("1. Edit name")
@@ -125,47 +212,81 @@ def edit_user(socialMedia, person):
         print("0. Back <-")
         choice = int(input("\n👆 Enter your choice: "))
 
+        # When user selected to edit name
         if choice == 1:
             old_name = person.get_name()
-            new_name = input("Enter new name: ").strip()
-            if new_name:
-                person.set_name(new_name)
-                print(f"✅ Name updated from [{old_name}] to [{new_name}]!")
-            else:
-                print("❗ Empty new name detected. Update unsuccessful")
+            new_name = ""
+            # Loop until user enters a valid new name
+            while True:
+                new_name = input("Enter name: ").strip()
+                # Ends the loop if name is not empty
+                if len(new_name) > 0:
+                    person.set_name(new_name)
+                    print(f"✅ Name updated from [{old_name}] to [{new_name}]!")
+                    break
+                else:
+                    print("❗ Invalid input. Please enter a valid new profile name.\n")
+        # When user selected to edit biography
         elif choice == 2:
             new_bio = input("Enter new biography: ").strip()
             person.set_bio(new_bio)
             print(f"✅ {person.get_name()}'s biography updated!")
+        # When user selected to remove a follower
         elif choice == 3:
-            clear_screen()
-            remove_follower(socialMedia, person)
+            # Check if there is any follower available to remove
+            if len(get_followers(socialMedia, person)) > 0:
+                clear_screen()
+                remove_follower(socialMedia, person)
+            else:
+                print("This user have no follower to remove ...")
+        # When user selected to remove a following
         elif choice == 4:
-            clear_screen()
-            remove_following(socialMedia, person)
+            # Check if there is any following available to remove
+            if len(get_following(socialMedia, person)) > 0:
+                clear_screen()
+                remove_following(socialMedia, person)
+            else:
+                print("This user have no following to remove ...")
+        # When user selected to back to edit user page
         elif choice == 0:
             clear_screen()
             break
         else:
             print("❗ Invalid choice. Please try again.")
 
+##################################################################################################################################
+""" To remove a follower """
+"""
+    This interface alllows users to:
+    - view all of the user's followers list
+    - select to remove follower from the list
+    - select to back to edit user page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+##################################################################################################################################
 def remove_follower(socialMedia, person):
+    # Loop until user wish to cancel deletion and back to edit user interface
     while True:
         render_header(f"Remove Follower For [{person.get_name()}]")
-        followers = get_followers(socialMedia, person)
-        count = 1
-        print(f"\nFollower List ({len(followers)}):")
+        followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+        count = 1   # For UI
+        print(f"Follower List ({len(followers)}):")
         for follower in followers:
             print(f"{count}. {follower}")
             count += 1
         print("\n0. Back <-")
         remove_sel = int(input("\n👆 Choose a follower to remove: "))
 
+        # When user selected to back to edit user page
         if remove_sel == 0:
             clear_screen()
             break
+        # When user selected to remove follower from list
+        # Check whether the user exists
         elif socialMedia.has_vertex(followers[remove_sel - 1]):
             try:
+                # Perform remove follower action
                 socialMedia.remove_edge(socialMedia.get_vertex_from_name(followers[remove_sel - 1]), person)
                 print(f"[{followers[remove_sel - 1]}] is not following [{person.get_name()}] now ...")
             except Exception as e:
@@ -174,22 +295,39 @@ def remove_follower(socialMedia, person):
         else:
             print("❗ Target user not found in the follower list. Remove follower unsuccessful ...")
 
+##################################################################################################################################
+""" To remove a user from following """
+"""
+    This interface alllows users to:
+    - view all of the user's following list
+    - select to remove a user from the following list
+    - select to back to edit user page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+##################################################################################################################################
 def remove_following(socialMedia, person):
+    # Loop until user wish to cancel deletion and back to edit user interface
     while True:
         render_header(f"Remove Following For [{person.get_name()}]")
-        followings = get_following(socialMedia, person)
-        count = 1
-        print(f"\nFollowing List ({len(followings)}):")
+        followings = get_following(socialMedia, person)     # Fetch all followings for this person
+        count = 1   # For UI
+        print(f"Following List ({len(followings)}):")
         for following in followings:
             print(f" {count}. {following}")
             count += 1
         print("\n0. Back <-")
         remove_sel = int(input("\n👆 Choose to remove a following user: "))
+
+        # When user selected to back to edit user page
         if remove_sel == 0:
             clear_screen()
             break
+        # When user selected to remove user from following list
+        # Check whether the user exists
         elif socialMedia.has_vertex(followings[remove_sel - 1]):
             try:
+                # Perform remove following action
                 socialMedia.remove_edge(person, socialMedia.get_vertex_from_name(followings[remove_sel - 1]))
                 print(f"[{person.get_name()}] is not following [{followings[remove_sel - 1]}] now ...")
             except Exception as e:
@@ -198,7 +336,19 @@ def remove_following(socialMedia, person):
         else:
             print("❗ Target user not found in the following list. Remove following unsuccessful ...")
 
-def delete_user(person, socialMedia):
+##################################################################################################################################
+""" To delete a user from the system """
+"""
+    This interface alllows users to:
+    - view all of the user's information
+    - select to confirm to delete the person
+    - select to back to specific user page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+##################################################################################################################################
+def delete_user(socialMedia, person):
+    # Loop until user wish to cancel deletion and back to specific user interface
     while True:
         render_header(f"Deleting User [{person.get_name()}]")
         print(f"Confirm deleting this user?\n")
@@ -210,14 +360,17 @@ def delete_user(person, socialMedia):
             print("0. Back <-")
             choice = int(input("\n👆 Enter your choice: "))
 
+            # When user selected to delete user
             if choice == 1:
                 clear_screen()
                 try:
+                    # Perform delete action
                     socialMedia.remove_vertex(person)
                     print(f"[{person.get_name()}] profile successfully removed ...")
                     break
                 except Exception as e:
                     print(f"❗ An error occurred while removing a following user: {e}")
+            # When user selected to back to specific user page
             elif choice == 0:
                 clear_screen()
                 break
@@ -227,90 +380,58 @@ def delete_user(person, socialMedia):
             print(f"❗ An error occurred while deleting a user: {e}")
             return None
 
-""" Print out the list of users """
-def print_all_users(socialMedia):
-    count = 1
-    # Loop through each person
-    for person in socialMedia.adj_list:
-        # Print the person's name 
-        print(f"{count}. {person.get_name()}")
-        count += 1
-
-def print_specific_user(socialMedia, id):
-    while True:
-        person = socialMedia.get_vertex_from_id(id)
-        try:
-            render_header(f"User Information")
-            
-            print(person.show_profile())
-
-            try:
-                followers = get_followers(socialMedia, person)
-                print(f"\nFollower List ({len(followers)}):")
-                for follower in followers:
-                    print(f"  - {follower}")
-                
-                followings = get_following(socialMedia, person)
-                print(f"\nFollowing List ({len(followings)}):")
-                for following in followings:
-                    print(f"  - {following}")
-            except Exception as e:
-                continue
-
-            print()
-            print("=" * 55)
-            print("\n1. Follow someone")
-            print("2. Edit this user")
-            print("3. Delete this user")
-            print("0. Back <-")
-            choice = int(input("\n👆 Enter your choice: "))
-
-            if choice == 1:
-                clear_screen()
-                follow_user(socialMedia, person)
-            elif choice == 2:
-                clear_screen()
-                print(f"Proceeding to edit user [{person.get_name()}]")
-                edit_user(socialMedia, person)
-            elif choice == 3:
-                clear_screen()
-                print(f"Proceeding to delete user [{person.get_name()}]")
-                delete_user(person, socialMedia)
-                if person not in socialMedia.adj_list:
-                    break
-            elif choice == 0:
-                clear_screen()
-                print("\nBack to users list ...")
-                break
-            else:
-                print("❗ Invalid choice. Please try again.")
-        except Exception as e:
-            print(f"❗ An error occurred while displaying [{person.get_name()}]'s information: {e}")
-            break
-
+##################################################################################################################################
+""" To follow other users """
+"""
+    This interface alllows users to:
+    - view all of the self unfollowed followers list
+    - view all of the recommendations
+    - select to follow a person from the lists
+    - select to back to specific user page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+##################################################################################################################################
 def follow_user(socialMedia, person):
+    # Loop until user wish to back to specific user interface
     while True:
-        count = 1
-        followers = get_followers(socialMedia, person)
-        combined = []
+        count = 1   # For UI
+        followers = get_followers(socialMedia, person)  # Fetch all followers for this person
+        followings = get_following(socialMedia, person) # Fetch all followings for this person
+        combined = []                                   # List to combine followers & recommendations
 
         render_header(f"Follow Someone For [{person.get_name()}]")
+        try:
+            # Loop through each follower
+            for follower in followers:
+                # Check if the current user doesn't follow back the follower
+                if not socialMedia.has_edge(person, socialMedia.get_vertex_from_name(follower)):
+                    # Print title for first instance only
+                    if count == 1:
+                        print(f"\nPeoples folling you that you haven't follow:")
+                    print(f"{count}. {follower}")
+                    count += 1                  # Increment count
+                    combined.append(follower)   # Append the unfollowed follower into the combined list
+        except Exception as e:
+            print(f"❗ An error occurred while rendering non-following followers for [{person.get_name()}]: {e}")
 
-        for follower in followers:
-            if not socialMedia.has_edge(person, socialMedia.get_vertex_from_name(follower)):
-                if count == 1:
-                    print(f"\nPeoples folling you that you haven't follow:")
-                print(f"{count}. {follower}")
-                count += 1
-                combined.append(follower)
-
-        print(f"\nRecommendations ({socialMedia.get_total_vertices() - 1 - len(followers)}):")
-        for vertex in socialMedia.adj_list:
-            if not socialMedia.has_edge(person, vertex) and vertex.get_name() is not person.get_name():
-                # Print the person's name 
-                print(f"{count}. {vertex.get_name()}")
-                count += 1
-                combined.append(vertex.get_name())
+        try:
+            # Recommendations includes those who are not following the person and followed by the person
+            # Exclude the count (friend suggestion) to prevent duplicate display below
+            print(f"\nRecommendations ({socialMedia.get_total_vertices() - count - len(followings)}):")
+            # Loop through each vertex
+            for vertex in socialMedia.adj_list:
+                # Check if the current user is not following the vertex (another person)
+                # Check to prevent following ownself
+                if not socialMedia.has_edge(person, vertex) and vertex.get_name() is not person.get_name():
+                    # Check if the vertex (another person) is not following the user (prevent duplicate)
+                    if not socialMedia.has_edge(vertex, person):
+                        # Print the vertex's (another person) name 
+                        print(f"{count}. {vertex.get_name()}")
+                        count += 1                          # Increment count
+                        combined.append(vertex.get_name())  # Append the recommendation into the combined list
+        except Exception as e:
+            print(f"❗ An error occurred while rendering follow recommendations for [{person.get_name()}]: {e}")
 
         try:
             print()
@@ -325,10 +446,17 @@ def follow_user(socialMedia, person):
                 print("\n0. Back <-")
             choice = int(input("\n👆 Enter your choice: "))
 
+            # When user selected to follow someone
+            # Check if there is at least 1 available user to follow (count = 2 onwards)
             if count > 1 and choice in range (1, count):
                 clear_screen()
-                socialMedia.add_edge(person, socialMedia.get_vertex_from_name(combined[choice - 1]))
+                try:
+                    # Perform follow action
+                    socialMedia.add_edge(person, socialMedia.get_vertex_from_name(combined[choice - 1]))
+                except Exception as e:
+                    print(f"❗ An error occurred while adding connection [{person.get_name()}] --> [{combined[choice - 1]}]: {e}")
                 return
+            # When user selected to back to specific user page
             elif choice == 0:
                 clear_screen()
                 break
@@ -338,78 +466,223 @@ def follow_user(socialMedia, person):
             print(f"❗ An error occurred while following a user: {e}")
             return None
 
-def print_connections(socialMedia):
-    for person in socialMedia.adj_list:
-            followers = socialMedia.get_incoming_edges(person)
-            followings = socialMedia.get_outgoing_edges(person)
+##################################################################################################################################
+""" Print out the list of all users """
+"""
+    This interface alllows users to:
+    - view all of the user's information
+    - view followers and follwoings list
+    - select to follow someone within the system
+    - select to edit the current user
+    - select to delete the current user
+    - select to back to all users page
+"""
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: id count (int) """
+##################################################################################################################################
+def print_specific_user(socialMedia, id):
+    # Loop until user wish to back to all users interface
+    while True:
+        # Fetch the person's object from the id count
+        # Not fetching person before calling this function 
+        # because there may be updates afterwards
+        # Need to fetch everytime it re-loops
+        person = socialMedia.get_vertex_from_id(id)
+        try:
+            render_header(f"User Information")
+            print(person.show_profile())
 
-            max_len = max(len(followers), len(followings))
+            followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+            followings = get_following(socialMedia, person)     # Fetch all followings for this person
+
+            print(f"\nFollower List ({len(followers)}):")
+            for follower in followers:
+                print(f"  - {follower}")
+            print(f"\nFollowing List ({len(followings)}):")
+            for following in followings:
+                print(f"  - {following}")
+            print()
+            print("=" * 55)
+            print("\n1. Follow someone")
+            print("2. Edit this user")
+            print("3. Delete this user")
+            print("0. Back <-")
+            choice = int(input("\n👆 Enter your choice: "))
+            
+            # When user selected to follow someone
+            if choice == 1:
+                # If total followings count is equal to all other users in the system
+                # Prevent user to proceed
+                if len(followings) == socialMedia.get_total_vertices() - 1:     # Excluding itself
+                    print("This user had followed all users ...")
+                else:
+                    clear_screen()
+                    print(f"Proceeding to follow users page ...")
+                    follow_user(socialMedia, person)
+            # When user selected to edit the current user
+            elif choice == 2:
+                clear_screen()
+                print(f"Proceeding to edit user [{person.get_name()}] ...")
+                edit_user(socialMedia, person)
+            # When user selected to delete the current user
+            elif choice == 3:
+                clear_screen()
+                print(f"Proceeding to delete user [{person.get_name()}] ...")
+                delete_user(socialMedia, person)
+                # When this user is successfully deleted
+                # Prompt user back to all users list (since the current user is not available now)
+                if person not in socialMedia.adj_list:
+                    break
+            # When user selected to back to all users interface
+            elif choice == 0:
+                clear_screen()
+                print("\nBack to all users list ...")
+                break
+            else:
+                print("❗ Invalid choice. Please try again.")
+        except Exception as e:
+            print(f"❗ An error occurred while displaying [{person.get_name()}]'s information: {e}")
+            break
+
+##################################################################################################################################
+""" Print out the list of all users """
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
+def print_all_users(socialMedia):
+    count = 1   # For UI
+    # Loop through each person
+    try:
+        for person in socialMedia.adj_list:
+            # Print the person's name in format (1. Name)
+            print(f"{count}. {person.get_name()}")
+            count += 1  # Increment count
+    except Exception as e:
+        print(f"❗ An error occurred while printing all users: {e}")
+
+##################################################################################################################################
+""" To print all connections between every users in a table format """
+"""
+    * Name
+    -------------------------------------------------------
+    Follower (1)             Following (2)
+    -------------------------------------------------------
+    xxx                      yyy
+                             zzz
+    -------------------------------------------------------
+"""
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
+def print_connections(socialMedia):
+    try:
+        # Loop through each person's key (object)
+        for person in socialMedia.adj_list:
+            followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+            followings = get_following(socialMedia, person)     # Fetch all followings for this person
+
+            max_len = max(len(followers), len(followings))      # Calculate the maximum count of followers/followings for UI
 
             print(f"\n* {person.get_name()}")
             print("-" * 55)
             print(f"{f'Follower ({len(followers)})':<25}Following ({len(followings)})")
             print("-" * 55)
-
             for i in range(max_len):
                 left = followers[i] if i < len(followers) else ""
                 right = followings[i] if i < len(followings) else ""
                 print(f"{left:<25}{right}")
             print("-" * 55)
             print()
+    except Exception as e:
+        print(f"❗ An error occurred while printing all user's connections: {e}")
 
+##################################################################################################################################
+""" To display all system's statistics """
+"""
+    This interface alllows users to:
+    - view total users count
+    - view gender overview/summary
+    - view average followers per user
+    - view users with most followers
+    - view users with no follower
+    - view users with not following anyone
+    - view users without connection
+    - view all friendships (following each other)
+"""
+""" Parameter: socialMedia object (class) """
+##################################################################################################################################
 def print_system_stat(socialMedia):
-    # To get total users
-    total_users = socialMedia.get_total_vertices()
+    total_users = socialMedia.get_total_vertices()  # fetch total users count
+    gender = [0, 0]                                 # To get gender summary (Male, Female)
+    followers_count = 0                             # To get followers count
+    most_followers = ['', 0]                        # To get most followers
+    most_followings = ['', 0]                       # To get most followings
+    no_followers = []                               # To get names of no followers
+    no_followings = []                              # To get names of no followings
+    no_connection = []                              # To get names of no followers and no followings
 
-    # To get gender summary
-    # To get most followers
-    # To get average followers
-    # To get no followers
-    # To get no followings
-    gender = [0, 0]
-    followers_count = 0
-    most_followers = 0
-    no_followers = []
-    no_followings = []
-    no_connection = []
+    # Loop through each person's key (object)
     for person in socialMedia.adj_list:
         if person.get_gender() == "M":
-            gender[0] += 1
+            gender[0] += 1      # If the person's gender is male (M)
         elif person.get_gender() == "F":
-            gender[1] += 1
-        followers = socialMedia.get_incoming_edges(person)
-        followings = socialMedia.get_outgoing_edges(person)
-        followers_count += len(followers)
+            gender[1] += 1      # If the person's gender is female (F)
 
-        if len(followers) > most_followers:
-            most_followers = len(followers)
+        followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+        followings = get_following(socialMedia, person)     # Fetch all followings for this person
+        followers_count += len(followers)                   # Get the followers count for this person
+
+        # Check if this person's followers is bigger than the current most
+        if len(followers) > most_followers[1]:
+            most_followers[0] = person.get_name()   # Update new person into most_followers[0]
+            most_followers[1] = len(followers)      # Update new value  into most_followers[1]
         
+        # Check if this person's followings is bigger than the current most
+        if len(followings) > most_followings[1]:
+            most_followings[0] = person.get_name()   # Update new person into most_followings[0]
+            most_followings[1] = len(followings)      # Update new value  into most_followings[1]
+        
+        # Check if this person has no connection with others
         if len(followers) == 0 and len(followings) == 0:
             no_connection.append(person.get_name())
+        # Check if this person has no followers
         if len(followers) == 0:
             no_followers.append(person.get_name())
+        # Check if this person is not following the others
         if len(followings) == 0:
             no_followings.append(person.get_name())
             
-    avg_followers = followers_count / total_users
+    avg_followers = followers_count / total_users           # Calculate average followers per user
+    friendships = socialMedia.get_bidirectional_edges()     # Fetch all of the friendships
 
     print(f"Total Users: {total_users}")
     print(f"Gender Overview: M ({gender[0]}) F ({gender[1]})")
     print("-" * 55)
     print(f"Average followers per user: {avg_followers}")
-    print(f"User with most followers: {most_followers}")
-    print(f"Users with no followers ({len(no_followers)}): {"N/A" if len(no_followers) == 0 else ", ".join(no_followers)}")
+    print(f"User with most followers: {most_followers[0]} ({most_followers[1]})")
+    print(f"User with most followings: {most_followings[0]} ({most_followings[1]})")
+    print(f"Users with no follower ({len(no_followers)}): {"N/A" if len(no_followers) == 0 else ", ".join(no_followers)}")
     print(f"Users not following anyone ({len(no_followings)}): {"N/A" if len(no_followings) == 0 else ", ".join(no_followings)}")
     print(f"User without connection ({len(no_connection)}): {"N/A" if len(no_connection) == 0 else ", ".join(no_connection)}")
     print("-" * 55)
-    print(f"All friendships ({len(socialMedia.get_bidirectional_edges())}): {"N/A" if len(socialMedia.get_bidirectional_edges()) == 0 else ""}")
-    for person1, person2 in socialMedia.get_bidirectional_edges():
+    print(f"All friendships ({len(friendships)}): {"N/A" if len(friendships) == 0 else ""}")
+    for person1, person2 in friendships:
         print(f"{person1.get_name()} <-> {person2.get_name()}")
     print("-" * 55)
     print()
-    
+
+##################################################################################################################################
+""" Fetch all followers for a person """
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+""" Return: All followers (list) """
+##################################################################################################################################
 def get_followers(socialMedia, person):
     return socialMedia.get_incoming_edges(person)
 
+##################################################################################################################################
+""" Fetch all followings of a person """
+""" Parameter 1: socialMedia object (class) """
+""" Parameter 2: person object (class) """
+""" Return: All followings (list) """
+##################################################################################################################################
 def get_following(socialMedia, person):
     return socialMedia.get_outgoing_edges(person)
