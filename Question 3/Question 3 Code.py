@@ -19,34 +19,32 @@ def generate_random_numbers():
 #                TO RUN MULTI-THREADS FOR PRE-DEFINED ROUNDS
 # =============================================================================
 
-""" Parameter: pre-defined rounds (int) """
+""" Parameter 1: Pre-defined rounds (int) """
+""" Parameter 2: Pre-defined thread count (int) """
 """ Return: Recorded time for every rounds (list) """
-def run_multi_thread(rounds):
+def run_multi_thread(rounds, thread_count):
     multi_thread_t = []     # List to store time taken for every multi-threading round
     # Loop for 'rounds' times
     for i in range(1, rounds + 1):
-        # Create 3 different threads
+        thread_ls = []      # Thread list to store all created threads (easier operation)
+        # Loop to create threads (amount according to thread_count)
         # Let every threads targets the generate_random_numbers function to run
-        t1 = threading.Thread(target=generate_random_numbers)
-        t2 = threading.Thread(target=generate_random_numbers)
-        t3 = threading.Thread(target=generate_random_numbers)
-
-        # Record the start time in nanoseconds
+        for _ in range (thread_count):
+            thread = threading.Thread(target=generate_random_numbers)
+            thread_ls.append(thread)    # Store into thread list
+        
+        # Record the start time in nanoseconds before starting all threads
         start_time = time.time_ns()
+        # Start all threads
+        for thread in thread_ls:
+            thread.start()
 
-        # Start all 3 threads
-        t1.start()
-        t2.start()
-        t3.start()
+        # Wait for all threads to complete before proceed
+        for thread in thread_ls:
+            thread.join()
         
-        # Wait for all 3 threads to complete before proceed
-        t1.join()
-        t2.join()
-        t3.join()
-        
-        # Record the time interval in nanoseconds
-        interval = time.time_ns() - start_time
-        multi_thread_t.append(interval)
+        # Record the time interval in nanoseconds (end_time - start time)
+        multi_thread_t.append(time.time_ns() - start_time)
 
     return multi_thread_t
 
@@ -119,7 +117,7 @@ def print_performance_table(multi_thread_t, single_thread_t):
 # =============================================================================
 
 def main():
-    multi_thread_t = run_multi_thread(10)
+    multi_thread_t = run_multi_thread(10, 3)
     single_thread_t = run_single_thread(10)
     print_performance_table(multi_thread_t, single_thread_t)
 
