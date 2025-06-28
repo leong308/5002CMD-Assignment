@@ -12,7 +12,7 @@ def main():
     socialMedia = SocialMedia()
     # Add dummy users into social media app
     users = [
-        Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌', False,),
+        Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌', True,),
         Person('Pey Hui Yi', 'F', 'Bookworm and nature lover 📚🌿', True),
         Person('Tan Zhi Qi', 'F', 'Runner, coder, dreamer 🏃‍♀️💻', True),
         Person('Jason Wong', 'M', 'Coffee is life ☕', False),

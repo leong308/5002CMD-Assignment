@@ -49,7 +49,10 @@ def main_dahsboard(socialMedia):
         print("2. View all connections")
         print("3. View system statistics")
         print("0. Exit")
-        choice = int(input("\n👆 Navigate to? : "))
+        choice = input("\n👆 Navigate to? : ")
+        # Prevent ValueError exceptions
+        if choice.isdigit():
+            choice = int(choice)
         
         # When user selected to view all users
         if choice == 1:
@@ -122,7 +125,10 @@ def all_users_interface(socialMedia):
             print(f"1-{total_users}.", "View specific user")
             print(" 11. Add new user")
             print("  0. Back <-")
-        choice = int(input("\n👆 Enter your choice: "))
+        choice = input("\n👆 Enter your choice: ")
+        # Prevent ValueError exceptions
+        if choice.isdigit():
+            choice = int(choice)
 
         # When user selected to view a specific user
         # Check if the choice is in range of the total users
@@ -217,7 +223,10 @@ def edit_user(socialMedia, person):
         print("4. Remove a follower")
         print("5. Remove a following")
         print("0. Back <-")
-        choice = int(input("\n👆 Enter your choice: "))
+        choice = input("\n👆 Enter your choice: ")
+        # Prevent ValueError exceptions
+        if choice.isdigit():
+            choice = int(choice)
 
         # When user selected to edit name
         if choice == 1:
@@ -244,7 +253,10 @@ def edit_user(socialMedia, person):
             while True:
                 # Display the account type
                 print(f"\nCurrent account type: {"Private" if person.get_privacy() else "Public"}")
-                selection = int(input("Enter 1 to toggle privacy or 0 to abort operation: "))
+                selection = input("Enter 1 to toggle privacy or 0 to abort operation: ")
+                # Prevent ValueError exceptions
+                if selection.isdigit():
+                    selection = int(selection)
 
                 # When user selected to toggle the person's privacy
                 if selection == 1:
@@ -258,7 +270,6 @@ def edit_user(socialMedia, person):
                     break
                 else:
                     print("❗ Invalid selection. Please try again.")
-
         # When user selected to remove a follower
         elif choice == 4:
             # Check if there is any follower available to remove
@@ -304,7 +315,10 @@ def remove_follower(socialMedia, person):
             print(f"{count}. {follower}")
             count += 1
         print("\n0. Back <-")
-        remove_sel = int(input("\n👆 Choose a follower to remove: "))
+        remove_sel = input("\n👆 Choose a follower to remove: ")
+        # Prevent ValueError exceptions
+        if remove_sel.isdigit():
+            remove_sel = int(remove_sel)
 
         # When user selected to back to edit user page
         if remove_sel == 0:
@@ -312,7 +326,7 @@ def remove_follower(socialMedia, person):
             break
         # When user selected to remove follower from list
         # Check whether the user exists
-        elif socialMedia.has_vertex(followers[remove_sel - 1]):
+        elif remove_sel in range (count) and socialMedia.has_vertex(followers[remove_sel - 1]):
             try:
                 # Perform remove follower action
                 socialMedia.remove_edge(socialMedia.get_vertex_from_name(followers[remove_sel - 1]), person)
@@ -345,7 +359,10 @@ def remove_following(socialMedia, person):
             print(f" {count}. {following}")
             count += 1
         print("\n0. Back <-")
-        remove_sel = int(input("\n👆 Choose to remove a following user: "))
+        remove_sel = input("\n👆 Choose to remove a following user: ")
+        # Prevent ValueError exceptions
+        if remove_sel.isdigit():
+            remove_sel = int(remove_sel)
 
         # When user selected to back to edit user page
         if remove_sel == 0:
@@ -353,7 +370,7 @@ def remove_following(socialMedia, person):
             break
         # When user selected to remove user from following list
         # Check whether the user exists
-        elif socialMedia.has_vertex(followings[remove_sel - 1]):
+        elif remove_sel in range (count) and socialMedia.has_vertex(followings[remove_sel - 1]):
             try:
                 # Perform remove following action
                 socialMedia.remove_edge(person, socialMedia.get_vertex_from_name(followings[remove_sel - 1]))
@@ -386,7 +403,10 @@ def delete_user(socialMedia, person):
             print("=" * 55)
             print("\n1. Delete")
             print("0. Back <-")
-            choice = int(input("\n👆 Enter your choice: "))
+            choice = input("\n👆 Enter your choice: ")
+            # Prevent ValueError exceptions
+            if choice.isdigit():
+                choice = int(choice)
 
             # When user selected to delete user
             if choice == 1:
@@ -472,7 +492,10 @@ def follow_user(socialMedia, person):
                 print("  0. Back <-")
             else:
                 print("\n0. Back <-")
-            choice = int(input("\n👆 Enter your choice: "))
+            choice = input("\n👆 Enter your choice: ")
+            # Prevent ValueError exceptions
+            if choice.isdigit():
+                choice = int(choice)
 
             # When user selected to follow someone
             # Check if there is at least 1 available user to follow (count = 2 onwards)
@@ -520,12 +543,12 @@ def print_specific_user(socialMedia, id):
             render_header(f"User Information")
             print(person.show_profile())
             
+            followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+            followings = get_following(socialMedia, person)     # Fetch all followings for this person
+
             # When the private status if False
             # Display followers and followings
             if not person.get_privacy():
-                followers = get_followers(socialMedia, person)      # Fetch all followers for this person
-                followings = get_following(socialMedia, person)     # Fetch all followings for this person
-
                 print(f"\nFollower List ({len(followers)}):")
                 for follower in followers:
                     print(f"  - {follower}")
@@ -538,8 +561,11 @@ def print_specific_user(socialMedia, id):
             print("2. Edit this user")
             print("3. Delete this user")
             print("0. Back <-")
-            choice = int(input("\n👆 Enter your choice: "))
-            
+            choice = input("\n👆 Enter your choice: ").strip()
+            # Prevent ValueError exceptions
+            if choice.isdigit():
+                choice = int(choice)
+
             # When user selected to follow someone
             if choice == 1:
                 # If total followings count is equal to all other users in the system
@@ -643,6 +669,7 @@ def print_connections(socialMedia):
 def print_system_stat(socialMedia):
     total_users = socialMedia.get_total_vertices()  # fetch total users count
     gender = [0, 0]                                 # To get gender summary (Male, Female)
+    private = 0                                     # To get the total of private accounts
     followers_count = 0                             # To get followers count
     most_followers = ['', 0]                        # To get most followers
     most_followings = ['', 0]                       # To get most followings
@@ -656,6 +683,9 @@ def print_system_stat(socialMedia):
             gender[0] += 1      # If the person's gender is male (M)
         elif person.get_gender() == "F":
             gender[1] += 1      # If the person's gender is female (F)
+        
+        if person.get_privacy():
+            private += 1        # If the person's privacy is set to True
 
         followers = get_followers(socialMedia, person)      # Fetch all followers for this person
         followings = get_following(socialMedia, person)     # Fetch all followings for this person
@@ -686,15 +716,16 @@ def print_system_stat(socialMedia):
 
     print(f"Total Users: {total_users}")
     print(f"Gender Overview: M ({gender[0]}) F ({gender[1]})")
+    print(f"Total Private Accounts: {private}")
     print("-" * 55)
-    print(f"Average followers per user: {avg_followers}")
-    print(f"User with most followers: {most_followers[0]} ({most_followers[1]})")
-    print(f"User with most followings: {most_followings[0]} ({most_followings[1]})")
-    print(f"Users with no follower ({len(no_followers)}): {"N/A" if len(no_followers) == 0 else ", ".join(no_followers)}")
-    print(f"Users not following anyone ({len(no_followings)}): {"N/A" if len(no_followings) == 0 else ", ".join(no_followings)}")
-    print(f"User without connection ({len(no_connection)}): {"N/A" if len(no_connection) == 0 else ", ".join(no_connection)}")
+    print(f"Average Followers Per User: {avg_followers}")
+    print(f"User With Most Followers: {most_followers[0]} ({most_followers[1]})")
+    print(f"User With Most Followings: {most_followings[0]} ({most_followings[1]})")
+    print(f"Users With No Follower ({len(no_followers)}): {"N/A" if len(no_followers) == 0 else ", ".join(no_followers)}")
+    print(f"Users Not Following Anyone ({len(no_followings)}): {"N/A" if len(no_followings) == 0 else ", ".join(no_followings)}")
+    print(f"User Without Connection ({len(no_connection)}): {"N/A" if len(no_connection) == 0 else ", ".join(no_connection)}")
     print("-" * 55)
-    print(f"All friendships ({len(friendships)}): {"N/A" if len(friendships) == 0 else ""}")
+    print(f"All Friendships ({len(friendships)}): {"N/A" if len(friendships) == 0 else ""}")
     for person1, person2 in friendships:
         print(f"{person1.get_name()} <-> {person2.get_name()}")
     print("-" * 55)
