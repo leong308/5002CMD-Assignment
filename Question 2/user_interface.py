@@ -179,9 +179,15 @@ def add_new_user():
             print("❗ Invalid input. Please enter 'M' - Male or 'F' - Female.\n")
         # Biography is optional, accepts any form of input
         bio = input("Enter biography: ").strip()
+        # Loop until user enters a valid privacy type
+        while True:
+            private = input("Make it a private account (Y/N): ").strip().upper()
+            if private in ("Y", "N"):
+                break
+            print("❗ Invalid input. Please enter 'Y' - Set as Private Account or 'F' - Set as Public Account .\n")
 
         # Create and return new person's object
-        return Person(name, gender, bio)
+        return Person(name, gender, bio, True if private == "Y" else False)
     
     except Exception as e:
         print(f"❗ An error occurred while adding a new user: {e}")
@@ -207,8 +213,9 @@ def edit_user(socialMedia, person):
         render_header(f"Edit User [{person.get_name()}]")
         print("1. Edit name")
         print("2. Edit Biography")
-        print("3. Remove a follower")
-        print("4. Remove a following")
+        print("3. Edit Privacy")
+        print("4. Remove a follower")
+        print("5. Remove a following")
         print("0. Back <-")
         choice = int(input("\n👆 Enter your choice: "))
 
@@ -231,8 +238,29 @@ def edit_user(socialMedia, person):
             new_bio = input("Enter new biography: ").strip()
             person.set_bio(new_bio)
             print(f"✅ {person.get_name()}'s biography updated!")
-        # When user selected to remove a follower
+        # When user selected to edit privacy
         elif choice == 3:
+            # Loop until user wish to back to edit user interface
+            while True:
+                # Display the account type
+                print(f"\nCurrent account type: {"Private" if person.get_privacy() else "Public"}")
+                selection = int(input("Enter 1 to toggle privacy or 0 to abort operation: "))
+
+                # When user selected to toggle the person's privacy
+                if selection == 1:
+                    # Perform toggle privacy action
+                    person.set_privacy(not person.get_privacy())
+                    print(f"✅ {person.get_name()}'s privacy updated!")
+                    break
+                # When user selected to abort and back to edit user page
+                elif selection == 0:
+                    clear_screen()
+                    break
+                else:
+                    print("❗ Invalid selection. Please try again.")
+
+        # When user selected to remove a follower
+        elif choice == 4:
             # Check if there is any follower available to remove
             if len(get_followers(socialMedia, person)) > 0:
                 clear_screen()
@@ -240,7 +268,7 @@ def edit_user(socialMedia, person):
             else:
                 print("This user have no follower to remove ...")
         # When user selected to remove a following
-        elif choice == 4:
+        elif choice == 5:
             # Check if there is any following available to remove
             if len(get_following(socialMedia, person)) > 0:
                 clear_screen()
@@ -491,16 +519,19 @@ def print_specific_user(socialMedia, id):
         try:
             render_header(f"User Information")
             print(person.show_profile())
+            
+            # When the private status if False
+            # Display followers and followings
+            if not person.get_privacy():
+                followers = get_followers(socialMedia, person)      # Fetch all followers for this person
+                followings = get_following(socialMedia, person)     # Fetch all followings for this person
 
-            followers = get_followers(socialMedia, person)      # Fetch all followers for this person
-            followings = get_following(socialMedia, person)     # Fetch all followings for this person
-
-            print(f"\nFollower List ({len(followers)}):")
-            for follower in followers:
-                print(f"  - {follower}")
-            print(f"\nFollowing List ({len(followings)}):")
-            for following in followings:
-                print(f"  - {following}")
+                print(f"\nFollower List ({len(followers)}):")
+                for follower in followers:
+                    print(f"  - {follower}")
+                print(f"\nFollowing List ({len(followings)}):")
+                for following in followings:
+                    print(f"  - {following}")
             print()
             print("=" * 55)
             print("\n1. Follow someone")

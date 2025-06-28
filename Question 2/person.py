@@ -1,27 +1,35 @@
 # =============================================================================
 #                               PERSON CLASS
 # =============================================================================
-from queue import Full
-
 
 class Person:
     """ Constructor """
     """ Parameter 1: Person's name (string) """
     """ Parameter 2: Person's gender (string) """
     """ Parameter 3: Person's biography (string) - optional """
-    def __init__(self, name, gender, bio=""):
+    """ Parameter 4: Person's privacy status """
+    def __init__(self, name, gender, bio = "", privacy = True):
         self.name = name        # The person's name
         self.gender = gender    # The person's gender
         self.bio = bio          # The person's biography
+        self.privacy = privacy  # The person's privacy status
+        
     
     """ Fetch all of the person's details in enhanced formatting """
     """ Return: String of person's details (stting) """
     def show_profile(self):
-        return (
-            f"Name: {self.name}\n"
-            f"Gender: {self.gender}\n"
-            f"Biography: {self.bio}"
-        )
+        if self.get_privacy():
+            return (
+                f"Name: {self.name}\n"
+                "Account Type: Private"
+            )
+        else:
+            return (
+                f"Name: {self.name}\n"
+                f"Gender: {self.gender}\n"
+                f"Biography: {self.bio}"
+                "Account Type: Public"
+            )
     
     """ Get the person's name """
     """ Return: Person's name (string) """
@@ -32,11 +40,16 @@ class Person:
     """ Return: Person's gender (string) """
     def get_gender(self):
         return self.gender
-    
+
     """ Get the person's biography """
     """ Return: Person's biography (string) """
     def get_bio(self):
         return self.bio
+    
+    """ Get the person's privacy """
+    """ Return: Person's privacy (bool) """
+    def get_privacy(self):
+        return self.privacy
     
     """ Set the new name """
     """ Parameter: New name (string) """
@@ -52,6 +65,11 @@ class Person:
     """ Parameter: New biography (string) """
     def set_bio(self, new_bio):
         self.bio = new_bio
+
+    """ Set the new privacy status """
+    """ Parameter: New privacy status (bool) """
+    def set_privacy(self, privacy):
+        self.privacy = privacy
 
     """ Fetch the person's details (test) """
     """ Return: Person's details (string) """

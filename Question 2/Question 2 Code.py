@@ -12,14 +12,14 @@ def main():
     socialMedia = SocialMedia()
     # Add dummy users into social media app
     users = [
-        Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌'),
-        Person('Pey Hui Yi', 'F', 'Bookworm and nature lover 📚🌿'),
-        Person('Tan Zhi Qi', 'F', 'Runner, coder, dreamer 🏃‍♀️💻'),
-        Person('Jason Wong', 'M', 'Coffee is life ☕'),
-        Person('Amira Afiqah', 'F', 'Graphic designer & cat person 🐱🎨'),
-        Person('Aaron Lim', 'M', 'Love solving puzzles and writing code 🧩👨‍💻'),
-        Person('Nur Sarah', 'F', 'Baking & K-drama bingeing 🍰📺'),
-        Person('Marcus Tan', 'M', 'Climbing mountains one app at a time ⛰️📱'),
+        Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌', False,),
+        Person('Pey Hui Yi', 'F', 'Bookworm and nature lover 📚🌿', True),
+        Person('Tan Zhi Qi', 'F', 'Runner, coder, dreamer 🏃‍♀️💻', True),
+        Person('Jason Wong', 'M', 'Coffee is life ☕', False),
+        Person('Amira Afiqah', 'F', 'Graphic designer & cat person 🐱🎨', False),
+        Person('Aaron Lim', 'M', 'Love solving puzzles and writing code 🧩👨‍💻', True),
+        Person('Nur Sarah', 'F', 'Baking & K-drama bingeing 🍰📺', True),
+        Person('Marcus Tan', 'M', 'Climbing mountains one app at a time ⛰️📱', False),
     ]
 
     # Add all users into social media
