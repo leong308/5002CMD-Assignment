@@ -10,16 +10,16 @@ class HashTable:
     # =============================================================================
     def __init__(self, tb_size):
         self.tb_size = tb_size                      # Indicates the hash table's size
-        self.table = [[] for _ in range(tb_size)]   # For separate chaining using list of lists
+        self.bucket = [[] for _ in range(tb_size)]  # For separate chaining using list of lists
         self.collisions = 0                         # Used to store the amount of collision events
 
     # =============================================================================
     #         FOLDING TECHNIQUE HASH FUNCTION (RETURN BACK HASHED VALUE)
     # =============================================================================
-    def hash_function(self, key_str):
+    def hash_function(self, key):
         parts = []  # Initialize an empty list
-        for i in range(0, len(key_str), 4):         # Increment 4 after every loop
-            part = key_str[i:i + 4]                 # Cut the substring to the size of 4 on the base of current index
+        for i in range(0, len(key), 4):             # Increment 4 after every loop until reached the max length of key
+            part = key[i:i + 4]                     # Cut the string to the size of 4 on the base of current index
             parts.append(part)                      # Append the substring ino the parts list
         total = sum(int(part) for part in parts)    # Convert all substrings in the list back to integer and sum up all
         return total % self.tb_size                 # mod the value with table size to prevent overflow
@@ -27,11 +27,11 @@ class HashTable:
     # =============================================================================
     #                 FUNCTION TO INSERT A VALUE INTO HASH TABLE
     # =============================================================================
-    def insert_value(self, key_str):
-        index = self.hash_function(key_str)
-        if self.table[index]:                       # If the index is already occupied with any value or child
-            self.collisions += 1                    # Increment collision count by 1
-        self.table[index].append(key_str)           # Append the key into the table's index
+    def insert_value(self, key):
+        index = self.hash_function(key)
+        if self.bucket[index]:              # If the index is already occupied with any value or child
+            self.collisions += 1            # Increment collision count by 1
+        self.bucket[index].append(key)      # Append the key into the table's index
 
 # =============================================================================
 #                     USED TO GENERATE RANDOM IC NUMBER
@@ -86,6 +86,19 @@ def gen_random_ic(table1, table2):
     return table1, table2
 
 # =============================================================================
+#                            HASH TABLE PRINTING
+# =============================================================================
+
+def print_whole_tb(table):
+    print(f"Hash table with size: {table.tb_size}")
+    for index, list in enumerate(table.bucket):
+        line = f"table[{index + 1}]"
+        if list:
+            for value in list:
+                line += f"=---=[{value}]"
+        print(line)
+
+# =============================================================================
 #                           CONSTANTS DECLARATION
 # =============================================================================
 
@@ -119,6 +132,10 @@ def main():
     total_coll2 = sum(collisions_table2)
     avg_coll2 = total_coll2 / len(collisions_table2)
 
+    print_whole_tb(table1)
+    print()
+    print_whole_tb(table2)
+
     """ Header """
     print("\n" + "=" * 40)
     print(f"{'Collisions / Size':<20} | {TABLE1_SIZE:>7} | {TABLE2_SIZE:>7}")
@@ -137,6 +154,7 @@ def main():
     print("=" * 40)
     print(f"{'Total Collisions':<20} | {total_coll1:>7} | {total_coll2:>7}")
     print(f"{'Average Collisions':<20} | {avg_coll1:>7.1f} | {avg_coll2:>7.1f}")
+    print(f"{'Collision Rate (%)':<20} | {total_coll1 * 100 / (TABLE1_SIZE * 10):>7.2f} | {total_coll2* 100 / (TABLE1_SIZE * 10):>7.2f}")
     print("=" * 40)
 
 # =============================================================================
