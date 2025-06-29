@@ -27,7 +27,7 @@ class Person:
             return (
                 f"Name: {self.name}\n"
                 f"Gender: {self.gender}\n"
-                f"Biography: {self.bio}"
+                f"Biography: {self.bio}\n"
                 "Account Type: Public"
             )
     

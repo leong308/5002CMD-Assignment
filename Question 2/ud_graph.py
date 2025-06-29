@@ -1,12 +1,12 @@
 # from person import Person
 
 # =============================================================================
-#                             SOCIAL MEDIA CLASS
+#                                UDGraph CLASS
 # =============================================================================
-class SocialMedia:
+class UDGraph:
     """ Constructor """
     def __init__(self):
-        self.adj_list = dict()  # Create a dictionary as a member of the Social Media class
+        self.adj_list = dict()  # Create a dictionary as a member of the UDGraph class
 
     """ Check is the vertex is found """
     """ Parameter: vertex's name """
@@ -104,17 +104,15 @@ class SocialMedia:
     """ Return: All vertices names that has this vertex in their items (list) """
     def get_incoming_edges(self, vertex):
         incoming = []   # Create an empty list to store incoming vertices
-        # Loop through each vertex's key (vertex object), items (neighbors)
-        for from_vertex, linkings in self.adj_list.items():
-            # Lopp through each vertex in the neighbors list
-            for to_vertex in linkings:
-                # When the target vertex (destination) is in the neighbors list
-                if to_vertex == vertex:
-                    # Append the name of the vertex into incoming list
-                    try:
-                        incoming.append(from_vertex.get_name())
-                    except Exception as e:
-                        print(f"❗ An error occurred while fetching incoming vertices for vertex [{vertex.get_name()}]: {e}")
+        # Loop through each vertex
+        for from_vertex in self.adj_list:
+            # If the to_vertex (target) is in the from_vertex neighbors
+            if vertex in self.adj_list[from_vertex]:
+                # Append the name of the vertex into incoming list
+                try:
+                    incoming.append(from_vertex.get_name())
+                except Exception as e:
+                    print(f"❗ An error occurred while fetching incoming vertices for vertex [{vertex.get_name()}]: {e}")
 
         return incoming
 

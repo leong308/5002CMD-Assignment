@@ -1,6 +1,6 @@
 import random
 from person import Person
-from social_media import SocialMedia
+from ud_graph import UDGraph
 import user_interface
 
 # =============================================================================
@@ -9,7 +9,7 @@ import user_interface
 
 def main():
     # Create social media instance
-    socialMedia = SocialMedia()
+    socialMedia = UDGraph()
     # Add dummy users into social media app
     users = [
         Person('Leong Zi Qi', 'M', 'Just a banana enthusiast 🍌', True,),
