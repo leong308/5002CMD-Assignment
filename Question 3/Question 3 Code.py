@@ -78,16 +78,19 @@ def run_single_thread(rounds):
 """ Parameter 2: Recorded time for every single-threading rounds (list) """
 def print_performance_table(multi_thread_t, single_thread_t):
     print("\nRound-by-Round Performance Comparison:")
-    print("+---------+--------------------------+------------------------------+------------------+")
-    print("|  Round  | Multithreading Time (ns) | Non-Multithreading Time (ns) |  Difference (ns) |")
-    print("+---------+--------------------------+------------------------------+------------------+")
+    print("+---------+--------------------------+------------------------------+------------------+----------------+")
+    print("|  Round  | Multithreading Time (ns) | Non-Multithreading Time (ns) |  Difference (ns) | Difference (%) |")
+    print("+---------+--------------------------+------------------------------+------------------+----------------+")
     for i in range(1, 11):
-        # Column 1, 2, 3, 4
+        diff = multi_thread_t[i - 1] - single_thread_t[i - 1]   # Calculate difference between both methods
+        diff_pct = diff * 100 / single_thread_t[i - 1]          # Calculate percentage of difference between both methods
+        # Column 1, 2, 3, 4, 5
         print(f"|{str(i).center(9)}|", end = "")
         print(f"{str(multi_thread_t[i - 1]).center(26)}|", end = "")
         print(f"{str(single_thread_t[i - 1]).center(30)}|", end = "")
-        print(f"{str(multi_thread_t[i - 1] - single_thread_t[i - 1]).center(18)}|")
-    print("+---------+--------------------------+------------------------------+------------------+")
+        print(f"{str(diff).center(18)}|", end = "")
+        print(f"{diff_pct:+.2f}".center(16) + "|")
+    print("+---------+--------------------------+------------------------------+------------------+----------------+")
 
     total_multi = sum(multi_thread_t)                   # Total time taken of all rounds (multi-threading)
     total_single = sum(single_thread_t)                 # Total time taken of all rounds (single-threading)
@@ -95,22 +98,25 @@ def print_performance_table(multi_thread_t, single_thread_t):
     avg_multi= total_multi / len(multi_thread_t)        # Average time taken of all rounds (multi-threading)
     avg_single = total_single / len(single_thread_t)    # Average time taken of all rounds (single-threading)
     avg_diff = avg_multi - avg_single                   # Average time difference between multi and single
+    avg_diff_pct = avg_diff * 100 / avg_single          # Average time difference in percentage
 
     print("\nSummary of Results:")
-    print("+--------------+------------------------+-----------------------------+--------------------+")
-    print("|    Metric    |   Multithreading (ns)  |   Non-Multithreading (ns)   |   Difference (ns)  |")
-    print("+--------------+------------------------+-----------------------------+--------------------+")
-    # Row 1 (Column 1, 2, 3, 4)
+    print("+--------------+------------------------+-----------------------------+--------------------+----------------+")
+    print("|    Metric    |   Multithreading (ns)  |   Non-Multithreading (ns)   |   Difference (ns)  | Difference (%) |")
+    print("+--------------+------------------------+-----------------------------+--------------------+----------------+")
+    # Row 1 (Column 1, 2, 3, 4, 5)
     print("|  Total Time  |", end = "")
     print(f"{str(total_multi).center(24)}|", end = "")
     print(f"{str(total_single).center(29)}|", end = "")
-    print(f"{str(total_diff).center(20)}|")
-    # Row 2 (Column 1, 2, 3, 4)
+    print(f"{str(total_diff).center(20)}|", end = "")
+    print(f" " * 15, "|")
+    # Row 2 (Column 1, 2, 3, 4, 5)
     print(f"| Average Time |", end = "")
     print(f"{str(int(avg_multi)).center(24)}|", end = "")
     print(f"{str(int(avg_single)).center(29)}|", end = "")
-    print(f"{str(int(avg_diff)).center(20)}|")
-    print("+--------------+------------------------+-----------------------------+--------------------+")
+    print(f"{str(int(avg_diff)).center(20)}|", end = "")
+    print(f"{avg_diff_pct:+.2f}".center(16) + "|")
+    print("+--------------+------------------------+-----------------------------+--------------------+----------------+")
 
 # =============================================================================
 #                        MAIN PROGRAM EXECUTION FLOW
